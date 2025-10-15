@@ -124,15 +124,18 @@ The scripts handle all path configuration and conda environment detection automa
 
 
 ## 📊 Evaluation
-- HOIDiNi evaluation utilities (statistical metrics,action recognition) are under `hoidini/eval/`.
-- The Hugging Face download includes evaluation assets in `hoidini_data/evaluation/`:
-  - `classifier_C30Datarep_DataRep_loc_6d/`
-  - `eval_dir/`
-  - `exp_121_model_CVAE_object_nojoint_lr_0-0005_batchsize_1_000500.p`
-  - `paper_results_grab/`
+HOIDiNi evaluation utilities (statistical metrics,action recognition) are under `hoidini/eval/`. The Hugging Face download includes evaluation assets in `hoidini_data/evaluation/`:
+- `classifier_C30Datarep_DataRep_loc_6d/`
+- `eval_dir/`
+- `exp_121_model_CVAE_object_nojoint_lr_0-0005_batchsize_1_000500.p`
+- `paper_results_grab/`
 
 ### Run Evaluation
 ```bash
+# Using the script (recommended)
+./scripts/eval.sh
+
+# Or run directly
 python hoidini/eval/eval.py
 ```
 
