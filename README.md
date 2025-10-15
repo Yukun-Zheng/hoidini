@@ -1,7 +1,5 @@
 # HOIDiNi: Human–Object Interaction through Diffusion Noise Optimization
-
-
-
+ 
 This is the official implementation of the HOIDiNi paper. For more information, please see the [project website](https://hoidini.github.io/) and the [arXiv paper](https://arxiv.org/abs/2506.15625).
 
 HOIDiNi generates realistic 3D human–object interactions conditioned on text prompts, object geometry and scene constraints. It combines diffusion-based motion synthesis with contact-aware diffusion noise optimization to produce visually plausible contacts and smooth, temporally coherent motions.
@@ -16,11 +14,15 @@ HOIDiNi generates realistic 3D human–object interactions conditioned on text p
 
  <img src="assets/teaser.png" alt="HOIDiNi teaser" width="800"/>
 
+### Changelog
+- Released GRAB evaluation code 🎉 [October 15, 2025]
+
+
 ## 📜 TODO List
 
 - [x] Release the main code
 - [x] Release the pretrained model
-- [ ] Release evaluation code
+- [x] Release evaluation code
 
 <!-- ## 💻 Demo
 <a href="https://hoidini.github.io/static/figures/results1.mp4">
@@ -48,6 +50,8 @@ bash setup.sh
 hf download Roey/hoidini --repo-type dataset --local-dir hoidini_data
 ```
 
+This also includes evaluation assets under `hoidini_data/evaluation/`.
+
 ### 4. Ready to use!
 The code will automatically use the downloaded data from `hoidini_data/`. No path configuration needed!
 
@@ -66,7 +70,12 @@ hoidini/                          # Main code repository
     │   ├── smplx/                       # SMPL-X models (full body)
     │   └── mano/                        # MANO hand models
     └── models/
-        └── cphoi_05011024_c15p100_v0/   # Trained model weights
+    │   └── cphoi_05011024_c15p100_v0/   # Trained model weights
+    └── evaluation/
+        ├── classifier_C30Datarep_DataRep_loc_6d/
+        ├── eval_dir/
+        ├── exp_121_model_CVAE_object_nojoint_lr_0-0005_batchsize_1_000500.p
+        └── paper_results_grab/
 ```
 
 
@@ -114,9 +123,18 @@ python hoidini/cphoi/cphoi_train.py \
 The scripts handle all path configuration and conda environment detection automatically.
 
 
-## 📊 Evaluation (TODO)
-- HOIDiNi evaluation utilities (statistical metrics, action recognition) are under `hoidini/eval/`.
-- Additional training/evaluation docs will be released.
+## 📊 Evaluation
+- HOIDiNi evaluation utilities (statistical metrics,action recognition) are under `hoidini/eval/`.
+- The Hugging Face download includes evaluation assets in `hoidini_data/evaluation/`:
+  - `classifier_C30Datarep_DataRep_loc_6d/`
+  - `eval_dir/`
+  - `exp_121_model_CVAE_object_nojoint_lr_0-0005_batchsize_1_000500.p`
+  - `paper_results_grab/`
+
+### Run Evaluation
+```bash
+python hoidini/eval/eval.py
+```
 
 ## 🖼 Visualization
 
