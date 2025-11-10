@@ -15,7 +15,7 @@ import colorsys
 
 SRC_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SRC_DIR)
-TMP_DIR = os.environ.get("TMP_DIR", "/home/dcor/roeyron/tmp/")
+TMP_DIR = os.environ.get("TMP_DIR", os.path.join(PROJECT_DIR, "tmp"))
 
 
 def seed_everything(seed: int):
