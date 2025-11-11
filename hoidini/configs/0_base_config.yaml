@@ -1,84 +1,88 @@
-defaults:
-  - _self_
+defaults:  # Hydra配置框架的默认列表指令
+  - _self_  # 指定当前配置文件拥有最高优先级，不被其他默认配置覆盖
 
-_target_: hoidini.cphoi.CPHOIInferenceConfig
+_target_: hoidini.cphoi.CPHOIInferenceConfig  # 要实例化的目标配置类
 
-seed: null
-model_path: hoidini_data/models/cphoi_05011024_c15p100_v0/model000120000.pt
-out_dir: null
-# grab_dataset_path: <not overridden>
-batch_size_gen: 2
-device: 0
-sampler_config:
-  _target_: hoidini.cphoi.samplers.samplers.TestSampler
-  n_samples: -1
-  split_name: test
-  seed: 1
-  n_frames: null
+seed: null  # 随机种子，null表示使用随机种子
+model_path: hoidini_data/models/cphoi_05011024_c15p100_v0/model000120000.pt  # 预训练模型权重文件路径
+out_dir: null  # 输出目录，null表示使用默认路径
+# grab_dataset_path: <not overridden>  # 数据集路径（被注释，使用父级配置）
+batch_size_gen: 2  # 生成时的批次大小
+device: 0  # 使用的GPU设备编号（0表示第一个GPU）
+sampler_config:  # 采样器配置节开始
+  _target_: hoidini.cphoi.samplers.samplers.TestSampler  # 采样器类为测试采样器
+  n_samples: -1  # 采样数量，-1表示使用所有样本
+  split_name: test  # 使用测试集划分
+  seed: 1  # 采样器随机种子，确保可重现性
+  n_frames: null  # 每序列帧数，null表示使用默认长度
 
-# autoregressive_include_prefix: <not overridden>
-guidance_param: 3.0
-n_simplify_object: 3000
-th_contact_force: 0.4
-n_simplify_hands: 1100
+# autoregressive_include_prefix: <not overridden>  # 自回归包含前缀设置（被注释）
+guidance_param: 3.0  # 条件引导参数，控制生成结果与条件的相关程度
+n_simplify_object: 3000  # 物体网格简化后的目标面数
+th_contact_force: 0.4  # 接触力阈值，用于判断有效接触
+n_simplify_hands: 1100  # 手部网格简化后的目标面数
 
-one_phase_experiment: false
+one_phase_experiment: false  # 是否使用单阶段实验，false表示使用两阶段优化
 
-dno_options_phase1:
-  _target_: hoidini.optimize_latent.dno.DNOOptions
-  num_opt_steps: 350
-  lr: 0.9
-  lr_warm_up_steps: 20
-  perturb_scale: 0.000001
-  diff_penalty_scale: 1e-06
-
-
-dno_loss_coefficients_phase1:
-  keep_object_static: 0.9
-  above_table: 1.2
-  similar_6dof_1: 0.5
-  similar_6dof_2: 0.5
-
-dno_options_phase2:
-  _target_: hoidini.optimize_latent.dno.DNOOptions
-  num_opt_steps: 350
-  lr: 0.9
-  lr_warm_up_steps: 20
-  perturb_scale: 0.00001
-  diff_penalty_scale: 1e-06
-  decorrelate_scale: 10
+dno_options_phase1:  # 第一阶段DNO（扩散噪声优化）选项开始
+  _target_: hoidini.optimize_latent.dno.DNOOptions  # DNO选项配置类
+  num_opt_steps: 350  # 优化步数
+  lr: 0.9  # 学习率
+  lr_warm_up_steps: 20  # 学习率预热步数
+  perturb_scale: 0.000001  # 扰动尺度（添加的噪声大小）
+  diff_penalty_scale: 1e-06  # 差分惩罚权重，平滑运动
 
 
-dno_loss_coefficients_phase2:
-  contact: 0.95
-  penetration: 0.05
-  jitter_joints: 0.00008
-  above_table: 0.2
-  side_table: 0.2
-  foot_skate: 0.5
+dno_loss_coefficients_phase1:  # 第一阶段损失函数权重系数开始
+  keep_object_static: 0.9  # 保持物体静止的损失权重
+  above_table: 1.2  # 在桌面上方的损失权重
+  similar_6dof_1: 0.5  # 第一个6自由度相似性损失权重
+  similar_6dof_2: 0.5  # 第二个6自由度相似性损失权重
 
-use_dno_object: true
-use_dno_body: true
-anim_setup: NO_MESH
-result_phases_to_animate: [final]
-result_phases_to_save: [final]
-
-anim_save_every_n_gens: 7
-
-
-use_classifier_guidance: false
-classifier_guidance_n_steps: null
-classifier_guidance_lr_factor: null
-
-# train: <not overridden>
-
-# Extra keys not in CphoiInferenceConfig, kept at the end in their current order
-output_dir: null
-n_frames: null
-grab_dataset_path: hoidini_data/datasets/GRAB_RETARGETED_compressed
-autoregressive_include_prefix: true
-save_result_pickle: true 
-store_loss_data: false
+dno_options_phase2:  # 第二阶段DNO选项开始
+  _target_: hoidini.optimize_latent.dno.DNOOptions  # DNO选项配置类
+  num_opt_steps: 350  # 优化步数
+  lr: 0.9  # 学习率
+  lr_warm_up_steps: 20  # 学习率预热步数
+  perturb_scale: 0.00001  # 扰动尺度（比第一阶段大）
+  diff_penalty_scale: 1e-06  # 差分惩罚权重
+  decorrelate_scale: 10  # 去相关损失权重（第二阶段特有）
 
 
-replace_cps_with_nearest_neighbors: false
+dno_loss_coefficients_phase2:  # 第二阶段损失函数权重系数开始
+  contact: 0.95  # 接触损失权重（核心目标）
+  penetration: 0.05  # 穿透惩罚损失权重
+  jitter_joints: 0.00008  # 关节抖动惩罚损失权重
+  above_table: 0.2  # 在桌面上方的损失权重
+  side_table: 0.2  # 桌子侧面约束损失权重
+  foot_skate: 0.5  # 脚部滑动惩罚损失权重
+
+use_dno_object: true  # 是否对物体应用DNO优化
+use_dno_body: true  # 是否对身体应用DNO优化
+anim_setup: NO_MESH  # 动画生成模式，NO_MESH表示不使用高精度网格
+result_phases_to_animate: [final]  # 需要生成动画的结果阶段（仅最终阶段）
+result_phases_to_save: [final]  # 需要保存数据的结果阶段（仅最终阶段）
+
+anim_save_every_n_gens: 7  # 每隔多少次生成保存一次动画（用于中间检查）
+
+
+render_video: true  # 是否渲染视频
+render_resolution: 1024  # 渲染视频的分辨率（宽度）
+render_fps: 20  # 渲染视频的帧率
+
+use_classifier_guidance: false  # 是否使用分类器引导
+classifier_guidance_n_steps: null  # 分类器引导步数（未使用）
+classifier_guidance_lr_factor: null  # 分类器引导学习率因子（未使用）
+
+# train: <not overridden>  # 训练配置（被注释，使用父级配置）
+
+# Extra keys not in CphoiInferenceConfig, kept at the end in their current order  # 注释：以下是额外配置项，按原顺序保留
+output_dir: null  # 输出目录（额外项，可能与out_dir功能类似）
+n_frames: null  # 帧数设置（额外项）
+grab_dataset_path: hoidini_data/datasets/GRAB_RETARGETED_compressed  # GRAB数据集路径（额外项）
+autoregressive_include_prefix: true  # 自回归生成时是否包含前缀（额外项）
+save_result_pickle: true  # 是否保存结果为pickle文件（额外项）
+store_loss_data: false  # 是否存储详细损失数据（额外项）
+
+
+replace_cps_with_nearest_neighbors: false  # 是否用最近邻替换接触点（额外项）
