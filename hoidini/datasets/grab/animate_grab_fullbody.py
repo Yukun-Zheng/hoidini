@@ -207,14 +207,10 @@ def animate_grab_fullbody(
 
 
 def main_test_sources():
-    animation_path = (
-        "/home/dcor/roeyron/trumans_utils/DATASETS/Data_GRAB/s2/banana_eat_1.npz"
-    )
-    animation_path = (
-        "/home/dcor/roeyron/trumans_utils/DATASETS/Data_GRAB/s2/teapot_lift.npz"
-    )
-    animation_path = "/home/dcor/roeyron/trumans_utils/DATASETS/Data_GRAB/s1/alarmclock_offhand_1.npz"
-    # out_dir = "/home/dcor/roeyron/tmp/grab"
+    # Use GRAB_DATA_PATH environment/config instead of absolute paths
+    animation_path = os.path.join(GRAB_DATA_PATH, "s2/banana_eat_1.npz")
+    animation_path = os.path.join(GRAB_DATA_PATH, "s2/teapot_lift.npz")
+    animation_path = os.path.join(GRAB_DATA_PATH, "s1/alarmclock_offhand_1.npz")
     for hand_data_source in HAND_DATA_SOURCE_MODES:
         save_path = os.path.join(
             TMP_DIR,
@@ -235,9 +231,7 @@ def main_test_sources():
 
 
 def main_test_setups():
-    animation_path = (
-        "/home/dcor/roeyron/trumans_utils/DATASETS/Data_GRAB/s1/teapot_pour_1.npz"
-    )
+    animation_path = os.path.join(GRAB_DATA_PATH, "s1/teapot_pour_1.npz")
 
     configs = [
         {
@@ -270,9 +264,7 @@ def main_test_setups():
             use_betas_zero=use_betas_zero,
             gender_to_use=gender_to_use,
         )
-    print(
-        f"scp -r roeyron@c-005.cs.tau.ac.il:{save_dir} ~/Downloads/{os.path.basename(save_dir)}"
-    )
+    print(f"Saved results at: {save_dir}")
 
 
 # def compare_orig_and_retargeted():
@@ -334,8 +326,8 @@ def compare_orig_and_retargeted():
 
 
 def main():
-    animation_path = "/home/dcor/roeyron/trumans_utils/DATASETS/DATA_GRAB_RETARGETED/s2/airplane_fly_1.npz"
-    save_path = "/home/dcor/roeyron/tmp/s2_airplane_fly_neutral_retargeted.blend"
+    animation_path = os.path.join(GRAB_DATA_PATH, "s2/airplane_fly_1.npz")
+    save_path = os.path.join(TMP_DIR, "s2_airplane_fly_neutral_retargeted.blend")
     animate_grab_fullbody(
         animation_path,
         save_path,

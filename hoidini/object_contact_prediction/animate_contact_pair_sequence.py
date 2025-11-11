@@ -281,12 +281,20 @@ def main():
     pred_len = 10
     what_to_animate = "context"  # "pred" or "context"
 
+    # Resolve experiment directory for saving/loading Normalizer.
+    # Prefer env var CPDM_EXPERIMENT_DIR, fallback to TMP_DIR/EXPERIMENTS/cpdm_debug.
+    experiment_dir = os.environ.get(
+        "CPDM_EXPERIMENT_DIR",
+        os.path.join(TMP_DIR, "EXPERIMENTS", "cpdm_debug"),
+    )
+    os.makedirs(experiment_dir, exist_ok=True)
+
     dataloader = get_contact_pairs_dataloader(
         grab_dataset_path,
         batch_size=batch_size,
         context_len=context_len,
         pred_len=pred_len,
-        experiment_dir="/home/dcor/roeyron/trumans_utils/src/EXPERIMENTS/cpdm_debug",
+        experiment_dir=experiment_dir,
         is_training=True,
         lim=lim,
         use_normalizer=use_normalizer,

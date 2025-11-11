@@ -155,17 +155,17 @@ def reset_blender():
 
 def blend_scp_and_run(save_path):
     src = os.path.abspath(save_path)
-    dst = f"~/Downloads/{os.path.basename(save_path)}"
-    user = None
-    try:
-        user = os.getlogin()
-    except OSError:
-        pass
-    if user is None:
-        user = os.environ.get("SLURM_JOB_USER", None)
-    if user is None:
-        user = "roeyron"
-    print(f"\nscp {user}@c-006.cs.tau.ac.il:{src} {dst}\nblender {dst}\n")
+    dst = os.environ.get("BLEND_DST_PATH", f"~/Downloads/{os.path.basename(save_path)}")
+    remote_host = os.environ.get("REMOTE_HOST", None)
+    remote_user = os.environ.get("REMOTE_USER", None)
+    remote_prefix = os.environ.get("REMOTE_PREFIX", None)
+
+    msg_lines = [f"Saved: {src}", f"Local open: blender {dst}"]
+    if remote_host and remote_user:
+        prefix = remote_prefix or ""
+        # If running on a remote cluster, provide an rsync/scp hint without hardcoding domain
+        msg_lines.append(f"Remote copy: scp {remote_user}@{remote_host}:{prefix}{src} {dst}")
+    print("\n" + "\n".join(msg_lines) + "\n")
 
 
 def set_fps(fps: int):
