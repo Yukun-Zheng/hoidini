@@ -983,7 +983,7 @@ def main_test_dataloader():
     dataloader = get_cphoi_dataloader(
         grab_dataset_path=GRAB_DATA_PATH,
         batch_size=2,
-        experiment_dir="/home/dcor/roeyron/tmp/cphoi_test",
+experiment_dir=os.path.join(os.getcwd(), "tmp", "cphoi_test"),
         is_training=True,
         context_len=20,
         feature_names="cphoi",
@@ -1175,7 +1175,8 @@ def main_mixed():
     smpldata_mixed = dataset.feature_processor.decode(
         dp_mixed["features"], dp_mixed["tfm_processor"]
     )
-    save_path = "/home/dcor/roeyron/tmp/cphoi_data_test.blend"
+    from hoidini.general_utils import TMP_DIR
+    save_path = os.path.join(TMP_DIR, "cphoi_data_test.blend")
     cp_grab = smpldata_to_contact_pairs(smpldata_grab)
     visualize_hoi_animation(
         [smpldata_grab, smpldata_hml3d, smpldata_mixed],
@@ -1207,7 +1208,7 @@ def main_regular():
     dp = dataset[5]
     features = dp["features"]
     smpldata0 = dataset.feature_processor.decode(features, dp["tfm_processor"])
-    save_path = "/home/dcor/roeyron/tmp/cphoi_data_test.blend"
+    save_path = os.path.join(TMP_DIR, "cphoi_data_test.blend")
     visualize_motions([smpldata0.joints], save_path=save_path)
 
 
@@ -1226,7 +1227,7 @@ def main_lazy():
     dp = lazy_dataset.get_datapoint(inference_job)
     features = dp["features"]
     smpldata2 = lazy_dataset.feature_processor.decode(features, dp["tfm_processor"])
-    save_path = "/home/dcor/roeyron/tmp/cphoi_data_test.blend"
+    save_path = os.path.join(TMP_DIR, "cphoi_data_test.blend")
     visualize_motions([smpldata2.joints], save_path=save_path)
     blend_scp_and_run(save_path)
 

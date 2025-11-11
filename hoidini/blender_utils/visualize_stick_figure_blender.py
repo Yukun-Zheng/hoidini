@@ -200,7 +200,11 @@ def delete_all_data():
         bpy.data.armatures.remove(armature)
 
 
-def save_blender_file(path="/tmp/debug.blend"):
+from hoidini.general_utils import TMP_DIR
+
+def save_blender_file(path=None):
+    if path is None:
+        path = os.path.join(TMP_DIR, "debug.blend")
     print(f"{10 * '*'} saved {path}")
     bpy.ops.wm.save_as_mainfile(filepath=path)
 
@@ -695,7 +699,7 @@ def main():
     # motions assumed to be [seq_len, n_joints, 3]
     motion_init = yup2zup(d["initial_motion"])
     motion_opti = yup2zup(d["optimized_motion"])
-    motion_3 = yup2zup(np.load("/home/dcor/roeyron/trumans_utils/sample_joints.npy"))
+    motion_3 = yup2zup(np.load(os.path.join(os.getcwd(), "sample_joints.npy")))
 
     delete_all_data()
     add_camera()

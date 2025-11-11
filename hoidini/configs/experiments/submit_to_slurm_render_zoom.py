@@ -27,14 +27,14 @@ nvidia-smi
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/dcor/roeyron/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+__conda_setup="$(conda 'shell.bash' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/home/dcor/roeyron/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/dcor/roeyron/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/dcor/roeyron/miniconda3/bin:$PATH"
+    if command -v conda &> /dev/null; then
+        eval "$(conda shell.bash hook)"
+    elif [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "$HOME/miniconda3/etc/profile.d/conda.sh"
     fi
 fi
 unset __conda_setup
@@ -45,8 +45,8 @@ unset __conda_setup
 #################
 # CPHOI Inference
 #################
-cd /home/dcor/roeyron/trumans_utils/src
-conda activate mahoi
+cd $(pwd)
+conda activate yukun-hoidini || source activate yukun-hoidini || true
 export PYTHONPATH=$(pwd)
 CMD
 """
@@ -54,7 +54,7 @@ CMD
 
 _TASKS = [
     {
-        "blender_path": "/home/dcor/roeyron/trumans_utils/rendering/general/combined_0.blend",
+        "blender_path": os.path.join(os.getcwd(), "rendering", "general", "combined_0.blend"),
         "collections": [
             "COL_general_results__s10_binoculars_pass_1_0_V0_4",
             "COL_general_results__s10_bowl_pass_1_1_V2_5",
@@ -67,7 +67,7 @@ _TASKS = [
         ],
     },
     {
-        "blender_path": "/home/dcor/roeyron/trumans_utils/rendering/general/combined_1.blend",
+        "blender_path": os.path.join(os.getcwd(), "rendering", "general", "combined_1.blend"),
         "collections": [
             "COL_1_ours__s10_camera_takepicture_1_v_05_20_13_57_4_1",
             "COL_1_ours__s10_camera_takepicture_1_v_05_20_16_10_0_3",
@@ -80,7 +80,7 @@ _TASKS = [
         ],
     },
     {
-        "blender_path": "/home/dcor/roeyron/trumans_utils/rendering/general/combined_2.blend",
+        "blender_path": os.path.join(os.getcwd(), "rendering", "general", "combined_2.blend"),
         "collections": [
             "COL_1_ours__s10_gamecontroller_play_1_V5_1_0",
             "COL_general_results__s10_airplane_lift_1_V0_5",
@@ -92,7 +92,7 @@ _TASKS = [
         ],
     },
     {
-        "blender_path": "/home/dcor/roeyron/trumans_utils/rendering/general/combined_3.blend",
+        "blender_path": os.path.join(os.getcwd(), "rendering", "general", "combined_3.blend"),
         "collections": [
             "COL_general_results__s10_mug_drink_1_0_V2_0",
             "COL_general_results__s10_mug_drink_1_1_V2_1",
@@ -114,7 +114,7 @@ for fb_dict in _TASKS:
 
 import os
 
-dir_path = "/home/dcor/roeyron/trumans_utils/rendering/general/render_output_zoom"
+dir_path = os.path.join(os.getcwd(), "rendering", "general", "render_output_zoom")
 finished = []
 for dirname in os.listdir(dir_path):
     n = len(os.listdir(os.path.join(dir_path, dirname)))
@@ -154,23 +154,18 @@ def main():
         # start fresh each chunk
         slurm_content = SLURM_TEMPLATE.replace("JOBNAME", f"br_{chunk_id}").replace(
             "LOG_PATH",
-            os.path.join(
-                "/home/dcor/roeyron/trumans_utils/slurm_logs/render_zoom",
-                "%j_slurm.log",
-            ),
+            os.path.join(os.getcwd(), "slurm_logs", "render_zoom", "%j_slurm.log"),
         )
         cmd_lines = []
         for blender_path, collection_name in blender_paths_chunk:
             cmd_lines.append(
-                f"python /home/dcor/roeyron/trumans_utils/rendering/general/render_general_zoom.py --blender_path {blender_path} --collection_name {collection_name}"
+                f"python rendering/general/render_general_zoom.py --blender_path {blender_path} --collection_name {collection_name}"
             )
 
         cmd_block = "\n\n\n".join(cmd_lines)
         slurm_content = slurm_content.replace("CMD", cmd_block)
 
-        slurm_file_path = os.path.join(
-            "/home/dcor/roeyron/tmp", f"chunk_render{chunk_id}.slurm"
-        )
+        slurm_file_path = os.path.join(os.getcwd(), "tmp", f"chunk_render{chunk_id}.slurm")
         with open(slurm_file_path, "w") as f:
             f.write(slurm_content)
 

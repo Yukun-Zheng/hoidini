@@ -168,10 +168,9 @@ def animate_grab_object_and_hands(
 
 
 def main():
-    animation_path = (
-        "/home/dcor/roeyron/trumans_utils/DATASETS/Data_GRAB/s2/teapot_lift.npz"
-    )
-    save_path = "/home/dcor/roeyron/tmp/teapot_lift_only_hands.blend"
+    animation_path = os.path.join(GRAB_DATA_PATH, "s2", "teapot_lift.npz")
+    from hoidini.general_utils import TMP_DIR
+    save_path = os.path.join(TMP_DIR, "teapot_lift_only_hands.blend")
     animate_grab_object_and_hands(animation_path, save_path, tgt_fps=5, end_frame=50)
 
 

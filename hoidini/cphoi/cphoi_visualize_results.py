@@ -117,10 +117,8 @@ def visualize_results(cfg: VisualizationConfig) -> None:
 def main(cfg: VisualizationConfig):
     debug = False
     if debug:
-        cfg.hoi_result_dir = (
-            "/home/dcor/roeyron/trumans_utils/results/cphoi/668838_ours_2phases"
-        )
-        cfg.out_dir = "/home/dcor/roeyron/tmp/668838_ours_2phases"
+        cfg.hoi_result_dir = os.path.join(os.getcwd(), "hoidini_results", "cphoi", "668838_ours_2phases")
+        cfg.out_dir = os.path.join(os.getcwd(), "tmp", "668838_ours_2phases")
     visualize_results(cfg)
 
 

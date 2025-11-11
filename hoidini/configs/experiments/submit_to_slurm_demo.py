@@ -25,14 +25,14 @@ nvidia-smi
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/dcor/roeyron/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+__conda_setup="$(conda 'shell.bash' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/home/dcor/roeyron/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/dcor/roeyron/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/dcor/roeyron/miniconda3/bin:$PATH"
+    if command -v conda &> /dev/null; then
+        eval "$(conda shell.bash hook)"
+    elif [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "$HOME/miniconda3/etc/profile.d/conda.sh"
     fi
 fi
 unset __conda_setup
@@ -43,8 +43,8 @@ unset __conda_setup
 #################
 # CPHOI Inference
 #################
-cd /home/dcor/roeyron/trumans_utils/src
-conda activate mahoi
+cd $(pwd)
+conda activate yukun-hoidini || source activate yukun-hoidini || true
 export PYTHONPATH=$(pwd)
 CMD
 """
@@ -153,12 +153,12 @@ EXPERIMENTS = {
 def main():
     debug = False
     if debug:
-        out_dir = "/home/dcor/roeyron/trumans_utils/results/cphoi/kitchen_debug"
+        out_dir = os.path.join(os.getcwd(), "hoidini_results", "cphoi", "kitchen_debug")
         if os.path.exists(out_dir):
             shutil.rmtree(out_dir)
         os.makedirs(out_dir, exist_ok=True)
     else:
-        out_dir = "/home/dcor/roeyron/trumans_utils/results/kitchen"
+        out_dir = os.path.join(os.getcwd(), "hoidini_results", "kitchen")
     config_name = "sampling_cphoi_kitchen.yaml"
     version = "v10"
     for exp_name, seq_ids in EXPERIMENTS.items():
@@ -169,7 +169,7 @@ def main():
         slurm_content = slurm_content.replace(
             "LOG_PATH", os.path.join(out_dir_exp, "%j_slurm.log")
         )
-        slurm_file_path = os.path.join("/home/dcor/roeyron/tmp/", f"{exp_name}.slurm")
+        slurm_file_path = os.path.join(os.getcwd(), "tmp", f"{exp_name}.slurm")
 
         args = {
             "--config-name": config_name,

@@ -12,16 +12,14 @@ from hoidini.general_utils import torchify_numpy_dict
 from hoidini.skeletons.smplx_52 import SMPLX_52_144_INDS
 from hoidini.datasets.smpldata import SMPL_MODELS_PATH
 from hoidini.general_utils import get_least_busy_device, create_new_dir
+from hoidini.resource_paths import AMASS_EXTRACTED_PATH
+from hoidini.resource_paths import HML3D_GRAB_SMPLRIFKE_INPUTS_PATH
 
 device = get_least_busy_device()
 
-AMASS_PATH = (
-    "/home/dcor/roeyron/trumans_utils/DATASETS/AMASS_SMPL-X/AMASS_SMPL-X_extracted"
-)
+AMASS_PATH = AMASS_EXTRACTED_PATH
 debug = False
-output_path = (
-    "/home/dcor/roeyron/trumans_utils/DATASETS/Data_SMPLX_HML3D_GRAB_smplrifke_inputs"
-)
+output_path = HML3D_GRAB_SMPLRIFKE_INPUTS_PATH
 # create_new_dir(output_path)
 
 
@@ -43,8 +41,9 @@ HML_TO_AMASS_NAME_MAP = {v: k for k, v in AMASS_TO_HML_NAME_MAP.items()}
 
 
 def get_df_index_hml3d():
+    from hoidini.general_utils import SRC_DIR
     df_hml3d = pd.read_csv(
-        "/home/dcor/roeyron/trumans_utils/src/datasets/resources/humanml3d_index.csv"
+        os.path.join(SRC_DIR, "datasets", "resources", "humanml3d_index.csv")
     )
     df_hml3d["dataset"] = df_hml3d.source_path.apply(lambda p: p.split("/")[2])
     return df_hml3d
@@ -164,7 +163,8 @@ df_index.head()
 
 if debug:
     df_index_to_use = df_index.sort_values("dataset").groupby("dataset").head(2)
-    blend_dir_path = "/home/dcor/roeyron/tmp/amass_blend_vis"
+    from hoidini.general_utils import TMP_DIR
+    blend_dir_path = os.path.join(TMP_DIR, "amass_blend_vis")
     create_new_dir(blend_dir_path)
 else:
     df_index_to_use = df_index

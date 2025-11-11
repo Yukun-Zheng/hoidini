@@ -35,10 +35,10 @@ def visualize_mesh(
         verts = mesh.verts_list()[0].detach().cpu().numpy()
         faces = mesh.faces_list()[0].detach().cpu().numpy()
     create_mesh(verts, faces, mesh_name=unq_name, obj_name=unq_name)
-    save_blend_fname = save_blend_fname or "/home/dcor/roeyron/tmp/mymesh.blend"
+    save_blend_fname = save_blend_fname or os.path.join(TMP_DIR, "mymesh.blend")
     bpy.ops.wm.save_as_mainfile(filepath=save_blend_fname)
     print(
-        f"scp roeyron@c-005.cs.tau.ac.il:{os.path.abspath(save_blend_fname)} ~/Downloads/{os.path.basename(save_blend_fname)}\nblender ~/Downloads/{os.path.basename(save_blend_fname)}"
+        f"scp $USER@remote:{os.path.abspath(save_blend_fname)} ~/Downloads/{os.path.basename(save_blend_fname)}\nblender ~/Downloads/{os.path.basename(save_blend_fname)}"
     )
 
 

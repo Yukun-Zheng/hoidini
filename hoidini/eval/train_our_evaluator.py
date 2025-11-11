@@ -127,8 +127,8 @@ def process_smpldata_to_classification_batch(smpldata_lst, crop_size=60, contact
     return motion_features, smpl_data_ret
 
 def load_hoi_results(exp_name, seq_len, data_rep='loc_ang'):
-
-    results_json = '/home/dcor/roeyron/trumans_utils/results/cphoi_paper_experiments_fixed_keep_object_static/result_paths_per_experiment.json'
+    from hoidini.resource_paths import EVAL_RESULTS_JSON_PATH
+    results_json = EVAL_RESULTS_JSON_PATH
     with open(results_json, 'r') as f:
         results_dict = json.load(f)
     our_dataset_paths = results_dict[exp_name]
@@ -221,7 +221,8 @@ if __name__ == "__main__":
     if use_wandb:
         wandb.init(project='hoi_action_classifier3', name=args.exp_name, config=vars(args))
 
-    dataset_path = "/home/dcor/roeyron/trumans_utils/DATASETS/DATA_GRAB_RETARGETED"
+    from hoidini.resource_paths import GRAB_RETARGETED_DATA_PATH
+    dataset_path = GRAB_RETARGETED_DATA_PATH
     lim = 10 if args.is_debug else None
     batch_size = 3 if args.is_debug else args.batch_size
     train_set = HoiGrabDataset(dataset_path, seq_len=args.seq_len, lim=lim, 
@@ -230,7 +231,7 @@ if __name__ == "__main__":
                               use_cache=True, features_string=None, grab_seq_paths=None, grab_split='test')
 
     gen_features, gen_intent_vecs = load_hoi_results('1_ours_0', args.seq_len, data_rep=args.data_rep)
-    gen_infer_features, gen_infer_intent_vecs = load_hoi_results('1b_our_inference_only_0', args.seq_len, data_rep=args.data_rep)   
+    gen_infer_features, gen_infer_intent_vecs = load_hoi_results('1b_our_inference_only_0', args.seq_len, data_rep=args.data_rep)
 
     collate_fn = partial(collate_smplrifke_mdm, pred_len=args.seq_len, context_len=15)
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, collate_fn=collate_fn)
