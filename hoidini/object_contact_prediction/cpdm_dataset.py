@@ -629,7 +629,7 @@ def main2():
         grab_dataset_path,
         batch_size=16,
         total_seq_len=60,
-        experiment_dir="/home/dcor/roeyron/trumans_utils/src/EXPERIMENTS/cpdm_debug",
+experiment_dir=os.path.join(os.getcwd(), "EXPERIMENTS", "cpdm_debug"),
         is_training=True,
         lim=16,
     )
@@ -655,7 +655,7 @@ def test_interpolate():
     src_fps = 10
     tgt_fps = 20
     cps, _ = load_contact_pairs_sequence(
-        "/home/dcor/roeyron/trumans_utils/DATASETS/DATA_GRAB_RETARGETED/s2/teapot_lift.npz",
+os.path.join(GRAB_RETARGETED_DATA_PATH, "s2", "teapot_lift.npz"),
         tgt_fps=src_fps,
     )
     cps_interpolated = cps.interpolate(src_fps=src_fps, tgt_fps=tgt_fps)

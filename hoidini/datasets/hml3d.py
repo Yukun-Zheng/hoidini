@@ -12,10 +12,10 @@ from hoidini.blender_utils.visualize_stick_figure_blender import visualize_motio
 from hoidini.general_utils import torchify_numpy_dict
 from hoidini.skeletons.smplx_52 import SMPLX_52_144_INDS
 from hoidini.datasets.smpldata import SMPL_MODELS_PATH, SmplData
+from hoidini.general_utils import SRC_DIR
+from hoidini.resource_paths import AMASS_EXTRACTED_PATH
 
-AMASS_PATH = (
-    "/home/dcor/roeyron/trumans_utils/DATASETS/AMASS_SMPL-X/AMASS_SMPL-X_extracted"
-)
+AMASS_PATH = AMASS_EXTRACTED_PATH
 
 AMASS_TO_HML_NAME_MAP = {
     # amass_name: hml_name
@@ -33,7 +33,7 @@ HML_TO_AMASS_NAME_MAP = {v: k for k, v in AMASS_TO_HML_NAME_MAP.items()}
 
 def get_df_index_hml3d():
     df_hml3d = pd.read_csv(
-        "/home/dcor/roeyron/trumans_utils/src/datasets/resources/humanml3d_index.csv"
+        os.path.join(SRC_DIR, "datasets", "resources", "humanml3d_index.csv")
     )
     df_hml3d["dataset"] = df_hml3d.source_path.apply(lambda p: p.split("/")[2])
     df_hml3d["dp_name"] = df_hml3d["new_name"].apply(

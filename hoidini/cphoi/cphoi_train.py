@@ -38,7 +38,7 @@ PLATFORM_REGISTRY = {
 class CphoiTrainConfig:
     # training parameters
     debug_mode: bool = True
-    save_dir: str = "/home/dcor/roeyron/trumans_utils/src/Experiments/cphoi_train"
+    save_dir: str = os.path.join(os.getcwd(), "Experiments", "cphoi_train")
     grab_dataset_path: str = GRAB_DATA_PATH
     save_interval: int = 20000
     num_steps: int = 200000
@@ -180,7 +180,7 @@ def main(cfg: CphoiTrainConfig):
         dist_util.setup_dist(device.index)
         print("Debug mode ⚠️")
         cfg.train_platform_type = "NoPlatform"
-        cfg.save_dir = "/home/dcor/roeyron/trumans_utils/src/Experiments/cphoi_debug"
+        cfg.save_dir = os.path.join(os.getcwd(), "Experiments", "cphoi_debug")
         cfg.mixed_dataset = True
         cfg.mask_obj_related_features = True
         cfg.augment_xy_plane_prob = 0.1

@@ -36,7 +36,7 @@ PLATFORM_REGISTRY = {
 class Config:
     # training parameters
     debug_mode: bool = True
-    save_dir: str = "/home/dcor/roeyron/trumans_utils/src/Experiments/cpdm_debug"
+    save_dir: str = os.path.join(os.getcwd(), "Experiments", "cpdm_debug")
     grab_dataset_path: str = GRAB_DATA_PATH
     save_interval: int = 20000
     num_steps: int = 200000
@@ -204,7 +204,7 @@ def main(cfg: Config):
     if cfg.debug_mode:
         print("Debug mode ⚠️")
         cfg.train_platform_type = "NoPlatform"
-        cfg.save_dir = "/home/dcor/roeyron/trumans_utils/src/Experiments/cpdm_debug"
+        cfg.save_dir = os.path.join(os.getcwd(), "Experiments", "cpdm_debug")
         cfg.data_load_lim = 16
         cfg.batch_size = 16
         cfg.save_interval = 1000
@@ -225,5 +225,5 @@ if __name__ == "__main__":
 """
 python src/object_contact_prediction/train_cpdm.py \
     batch_size=64 \
-    save_dir=/home/dcor/roeyron/trumans_utils/src/Experiments/cpdm_v0 \
+    save_dir=$(pwd)/Experiments/cpdm_v0 \
 """

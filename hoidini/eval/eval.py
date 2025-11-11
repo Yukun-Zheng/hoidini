@@ -17,6 +17,7 @@ from hoidini.eval.action_rec import LSTM_Action_Classifier
 from hoidini.eval.evaluate_statistical_metrics import *
 from hoidini.eval.train_our_evaluator import load_classifier, process_smpldata_to_classification_batch
 from hoidini.resource_paths import GRAB_DATA_PATH, PROJECT_ROOT
+from hoidini.general_utils import TMP_DIR
 
 
 class Evaluator:
@@ -519,10 +520,8 @@ def main_gt(args):
         del eval
         gc.collect()
         torch.cuda.empty_cache()
-        
-    if args.debug:
-        print('DEBUG!!!!! not actual results')
-            
+
+
 def main_imos(args):
     with torch.no_grad():
         if args.debug:
@@ -558,7 +557,7 @@ def get_args():
     parser.add_argument('--pred2', action='store_true', help='Use predict2 method instead of predict for action recognition')
 
     parser.add_argument('--classifier', type=str, default='hoidini_data/evaluation/classifier_C30Datarep_DataRep_loc_6d', help='Path to the action classifier model directory (relative to project root or absolute)')
-    parser.add_argument('--out_path', type=str, default="/tmp/eval_results", help='Output directory path for saving evaluation results')
+    parser.add_argument('--out_path', type=str, default=os.path.join(TMP_DIR, "eval_results"), help='Output directory path for saving evaluation results')
     parser.add_argument('--crop_method', type=str, default='opt_1', help='Method for cropping sequences (opt_1, opt_2, etc.)')
     parser.add_argument('--crop_start', action='store_true', help='Start cropping from the beginning of sequences')
     
@@ -574,7 +573,7 @@ def get_args():
 
 
 if __name__ == '__main__':
-    args= get_args()
+    args = get_args()
     os.makedirs(args.out_path, exist_ok=True)
     
     # main_imos(args)

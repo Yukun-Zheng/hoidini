@@ -31,7 +31,12 @@ from hoidini.object_conditioning.object_pointcloud_dataset import (
     get_grab_point_cloud_dataset,
     PyGData,
 )
-from hoidini.resource_paths import GRAB_DATA_PATH, HUMANML3D_DATASET_PATH
+from hoidini.resource_paths import (
+    GRAB_DATA_PATH,
+    HUMANML3D_DATASET_PATH,
+    AMASS_RIFKE_INPUTS_PATH,
+    GRAB_RIFKE_INPUTS_PATH,
+)
 from hoidini.datasets.smpldata import SmplxFK
 from joblib import Memory
 from hoidini.closd.diffusion_planner.utils import dist_util
@@ -814,7 +819,7 @@ class HoiGrabDataset(SmplRifkeDataset):
 
 
 def main_hml():
-    dataset_path = "/home/dcor/roeyron/trumans_utils/Data_AMASS_smplrifke_inputs"
+    dataset_path = AMASS_RIFKE_INPUTS_PATH
     batch_size = 32
     n_features = 217
     context_len = 20
@@ -848,7 +853,7 @@ def main_hml():
 
 
 def main_grab():
-    dataset_path = "/home/dcor/roeyron/trumans_utils/Data_GRAB_smplrifke_inputs"
+    dataset_path = GRAB_RIFKE_INPUTS_PATH
     batch_size = 32
     n_features = 469
     context_len = 20

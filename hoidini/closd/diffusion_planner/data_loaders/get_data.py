@@ -20,6 +20,12 @@ from hoidini.datasets.dataset_smplrifke import (
 )
 from hoidini.normalizer import Normalizer
 from hoidini.general_utils import SRC_DIR
+from hoidini.resource_paths import (
+    AMASS_RIFKE_INPUTS_PATH,
+    GRAB_RIFKE_INPUTS_PATH,
+    HML3D_GRAB_SMPLRIFKE_INPUTS_PATH,
+    GRAB_RETARGETED_DATA_PATH,
+)
 from hoidini.closd.diffusion_planner.utils.fixseed import fixseed
 
 
@@ -133,21 +139,17 @@ def get_dataset_loader(
     sampler = None
     if name == "smplrifke":
         if dataset_data == "hml3d":
-            dataset_path = (
-                "/home/dcor/roeyron/trumans_utils/DATASETS/Data_AMASS_smplrifke_inputs"
-            )
+            dataset_path = AMASS_RIFKE_INPUTS_PATH
             dataset = HML3DSmplRifkeDataset(
                 dataset_path, seq_len=fixed_len, lim=data_load_lim, split=split
             )
         elif dataset_data == "grab":
-            dataset_path = (
-                "/home/dcor/roeyron/trumans_utils/DATASETS/Data_GRAB_smplrifke_inputs"
-            )
+            dataset_path = GRAB_RIFKE_INPUTS_PATH
             dataset = GrabRifkeDataset(
                 dataset_path, seq_len=fixed_len, lim=data_load_lim
             )
         elif dataset_data == "hml3d_grab":
-            dataset_path = "/home/dcor/roeyron/trumans_utils/DATASETS/Data_SMPLX_HML3D_GRAB_smplrifke_inputs"
+            dataset_path = HML3D_GRAB_SMPLRIFKE_INPUTS_PATH
             dataset = Hml3DGrabDataset(
                 dataset_path,
                 seq_len=fixed_len,
@@ -162,9 +164,7 @@ def get_dataset_loader(
             # dataset = Hml3DGrabDataset(dataset_path, seq_len=fixed_len, lim=debug_limit, hml_split=split, fk_device=dist_util.dev())
             sampler = dataset.get_sampler(out_lim_factor=10)
         elif dataset_data == "grabhoi":
-            dataset_path = (
-                "/home/dcor/roeyron/trumans_utils/DATASETS/DATA_GRAB_RETARGETED"
-            )
+            dataset_path = GRAB_RETARGETED_DATA_PATH
             dataset = HoiGrabDataset(
                 dataset_path,
                 seq_len=fixed_len,

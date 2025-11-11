@@ -1,4 +1,5 @@
 import pickle
+import os
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -105,14 +106,21 @@ def plot_dno_loss(optim_history, save_path=None):
 
 
 def main():
-    pickle_path = "/home/dcor/roeyron/tmp/results_hoi_04_15_00_40/hoi_animation_0__hammer__The_person_is_useing_a_hammer.blend"
+    from hoidini.general_utils import TMP_DIR
+    pickle_path = os.path.join(
+        TMP_DIR,
+        "results_hoi_04_15_00_40",
+        "hoi_animation_0__hammer__The_person_is_useing_a_hammer.blend",
+    )
     pickle_path = pickle_path.replace(".blend", ".pickle")
 
     with open(pickle_path, "rb") as f:
         optim_history = pickle.load(f)["optim_info_lst"]
 
     plot_dno_loss(
-        optim_history, save_path=pickle_path.replace(".pickle", "_loss.png"), show=False
+        optim_history,
+        save_path=pickle_path.replace(".pickle", "_loss.png"),
+        show=False,
     )
 
 

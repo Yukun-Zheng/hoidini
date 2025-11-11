@@ -13,7 +13,7 @@ from hoidini.geometry3d.mesh_utils import (
     numpy_to_open3d_mesh,
 )
 from hoidini.geometry3d.penetration_loss import compute_penetration
-from hoidini.general_utils import SRC_DIR, torchify_numpy_dict
+from hoidini.general_utils import SRC_DIR, torchify_numpy_dict, TMP_DIR
 from hoidini.datasets.smpldata import SmplData
 from hoidini.closd.diffusion_planner.utils import dist_util
 from hoidini.datasets.smpldata import SmplModelsFK
@@ -27,7 +27,7 @@ DO_FLIP = {
     (False, True, True): True,
 }
 
-CACHE_DIR_PATH = "/home/dcor/roeyron/tmp"
+CACHE_DIR_PATH = TMP_DIR
 
 
 def get_hand_meshes_building_data(

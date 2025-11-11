@@ -3,7 +3,7 @@ defaults:
 
 _target_: hoidini.cphoi.CPHOIInferenceConfig
 
-model_path: /home/dcor/roeyron/trumans_utils/src/Experiments/cphoi_05011024_c15p100_v0/model000120000.pt
+model_path: ./hoidini_data/models/cphoi_05011024_c15p100_v0/model000120000.pt
 out_dir: null
 # grab_dataset_path: <not overridden>
 batch_size_gen: 2
@@ -71,7 +71,7 @@ classifier_guidance_lr_factor: null
 # Extra keys not in CphoiInferenceConfig, kept at the end in their current order
 output_dir: null
 n_frames: null
-grab_dataset_path: /home/dcor/roeyron/trumans_utils/DATASETS/DATA_GRAB_RETARGETED
+grab_dataset_path: ${oc.env:GRAB_DATA_PATH, ./hoidini_data/datasets/GRAB_RETARGETED_compressed}
 autoregressive_include_prefix: true
 save_result_pickle: true 
 

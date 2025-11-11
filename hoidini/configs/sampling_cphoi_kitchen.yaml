@@ -3,8 +3,8 @@ defaults:
   - _self_
 
 
-out_dir: /home/dcor/roeyron/trumans_utils/results/cphoi/kitchen_debug
-model_path: /home/dcor/roeyron/trumans_utils/src/Experiments/cphoi_05011024_c15p100_v0/model000120000.pt
+out_dir: ./hoidini_results/cphoi/kitchen_debug
+model_path: ./hoidini_data/models/cphoi_05011024_c15p100_v0/model000120000.pt
 use_dno_object: true
 use_dno_body: true
 use_classifier_guidance: false

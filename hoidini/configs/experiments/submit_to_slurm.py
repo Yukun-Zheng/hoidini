@@ -25,14 +25,14 @@ nvidia-smi
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/dcor/roeyron/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+__conda_setup="$(conda 'shell.bash' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/home/dcor/roeyron/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/dcor/roeyron/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/dcor/roeyron/miniconda3/bin:$PATH"
+    if command -v conda &> /dev/null; then
+        eval "$(conda shell.bash hook)"
+    elif [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "$HOME/miniconda3/etc/profile.d/conda.sh"
     fi
 fi
 unset __conda_setup
@@ -43,8 +43,8 @@ unset __conda_setup
 #################
 # CPHOI Inference
 #################
-cd /home/dcor/roeyron/trumans_utils/src
-conda activate mahoi
+cd $(pwd)
+conda activate yukun-hoidini || source activate yukun-hoidini || true
 export PYTHONPATH=$(pwd)
 python cphoi/cphoi_inference.py \\
     "--config-name=CONFIGNAME" \\
@@ -94,12 +94,12 @@ EXPERIMENTS = {
 def main():
     debug = False
     if debug:
-        out_dir = "/home/dcor/roeyron/trumans_utils/results/cphoi/debug"
+        out_dir = os.path.join(os.getcwd(), "hoidini_results", "cphoi", "debug")
         if os.path.exists(out_dir):
             shutil.rmtree(out_dir)
         os.makedirs(out_dir, exist_ok=True)
     else:
-        out_dir = "/home/dcor/roeyron/trumans_utils/results/Results_June_10"
+        out_dir = os.path.join(os.getcwd(), "hoidini_results", "Results_June_10")
 
     for exp_name, exp_config in EXPERIMENTS.items():
         variants = exp_config.get("variants", [None])
@@ -114,9 +114,7 @@ def main():
             )
             slurm_content = slurm_content.replace("CONFIGNAME", exp_config["config"])
             slurm_content = slurm_content.replace("OUTDIR", out_dir_exp)
-            slurm_file_path = os.path.join(
-                "/home/dcor/roeyron/tmp/", f"{exp_name}.slurm"
-            )
+            slurm_file_path = os.path.join(os.getcwd(), "tmp", f"{exp_name}.slurm")
             extra_args = [variant]
             if debug:
                 extra_args.append("sampler_config.n_samples=3")

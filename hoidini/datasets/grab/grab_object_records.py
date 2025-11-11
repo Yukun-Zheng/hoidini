@@ -312,7 +312,7 @@ class ContactRecord:
 
 if __name__ == "__main__":
     data_point_path = (
-        "/home/dcor/roeyron/trumans_utils/DATASETS/Data_GRAB/s2/teapot_lift.npz"
+os.path.join(GRAB_DATA_PATH, "s2", "teapot_lift.npz")
     )
     grab_contact_record = ContactRecord.from_grab_data(data_point_path)
 

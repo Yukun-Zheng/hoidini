@@ -1,6 +1,7 @@
 from multiprocessing import current_process
 import os
 from typing import List, Optional, Union
+from hoidini.general_utils import TMP_DIR
 
 if current_process().name == "MainProcess":
     import bpy
@@ -141,7 +142,9 @@ def delete_all_data():
         bpy.data.armatures.remove(armature)
 
 
-def save_blender_file(path="/tmp/debug.blend"):
+def save_blender_file(path=None):
+    if path is None:
+        path = os.path.join(TMP_DIR, "debug.blend")
     print(f"{10 * '*'} saved {path}")
     bpy.ops.wm.save_as_mainfile(filepath=path)
 
