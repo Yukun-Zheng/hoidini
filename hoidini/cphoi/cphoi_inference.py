@@ -20,7 +20,11 @@ from hoidini.blender_utils.visualize_hoi_animation import (
     AnimationSetup,
     visualize_hoi_animation,
 )
-from hoidini.blender_utils.visualize_stick_figure_blender import save_blender_file
+from hoidini.blender_utils.visualize_stick_figure_blender import (
+    save_blender_file,
+    set_render_params,
+    render as render_video,
+)
 from hoidini.closd.diffusion_planner.utils import dist_util
 from hoidini.closd.diffusion_planner.utils.model_util import (
     create_gaussian_diffusion,
@@ -106,6 +110,11 @@ class CphoiInferenceConfig:
     anim_save_every_n_gens: Optional[int] = field(default=None)
     store_loss_data: bool = field(default=False)
 
+    # Video rendering options
+    render_video: bool = field(default=False)
+    render_resolution: int = field(default=1024)
+    render_fps: int = field(default=20)
+
     # classifier guidance (paper experiments)
     use_classifier_guidance: bool = field(default=False)
     classifier_guidance_lr_factor: Optional[float] = field(default=None)
@@ -141,6 +150,7 @@ def get_save_paths(
     save_paths["phase2_pickle"] = fpath_template.replace("SUFFIX", "phase2.pickle")
     save_paths["final_pickle"] = fpath_template.replace("SUFFIX", "final.pickle")
     save_paths["blend_vis"] = os.path.join(out_dir, f"{base_fname}_vis.blend")
+    save_paths["mp4_vis"] = os.path.join(out_dir, f"{base_fname}_vis.mp4")
     save_paths["phase1_dno_loss_fig"] = fpath_template.replace(
         "SUFFIX", "phase1_dno_loss.png"
     )
@@ -847,6 +857,9 @@ def cphoi_inference(cfg: CphoiInferenceConfig):
                 json.dumps(OmegaConf.to_container(cfg), indent=4)
             )
             save_blender_file(blend_save_path)
+            if cfg.render_video:
+                set_render_params(res=cfg.render_resolution, fps=cfg.render_fps)
+                render_video(save_paths["mp4_vis"])
             blend_scp_and_run(blend_save_path)
 
 

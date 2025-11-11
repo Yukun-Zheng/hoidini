@@ -110,6 +110,8 @@ def add_training_args(cfg: CPDMSamplingConfig):
     experiment_dir = os.path.dirname(cfg.model_path)
     cfg_train = OmegaConf.load(os.path.join(experiment_dir, "args.json"))
     cfg_train.experiment_dir = experiment_dir
+    # Ensure normalizer and experiment artifacts are resolved relative to the model directory
+    cfg_train.save_dir = experiment_dir
     cfg_train.model_path = cfg.model_path
     with open_dict(cfg):
         cfg.experiment_dir = experiment_dir
