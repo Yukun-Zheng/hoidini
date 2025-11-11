@@ -1,12 +1,11 @@
 #!/bin/bash
-conda activate hoidini
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 SAVE_DIR=hoidini_training/cphoi_v0
 
 python hoidini/cphoi/cphoi_train.py \
     save_dir=$SAVE_DIR \
     debug_mode=False \
-    device=0 \
+    device=${PHYSICAL_GPU_ID:-1} \
     batch_size=64 \
     pcd_n_points=512 \
     pcd_augment_rot_z=True \
