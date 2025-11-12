@@ -3,6 +3,40 @@ import os
 import glob
 import json
 from tqdm import tqdm
+import sys
+
+# Early: map physical GPU to CUDA:0 before importing torch
+def _early_set_cuda_visible_from_args_env():
+    phys_env = os.environ.get("PHYSICAL_GPU_ID")
+    if phys_env is not None:
+        try:
+            phys_val = int(phys_env)
+            if phys_val >= 0:
+                os.environ["CUDA_VISIBLE_DEVICES"] = str(phys_val)
+                return
+        except ValueError:
+            pass
+    argv = sys.argv[1:]
+    for i, arg in enumerate(argv):
+        if arg.startswith("--device"):
+            # Support both --device=3 and --device 3
+            val = None
+            if "=" in arg:
+                val = arg.split("=", 1)[1]
+            elif i + 1 < len(argv):
+                val = argv[i + 1]
+            if val is not None:
+                try:
+                    phys_val = int(val)
+                    if phys_val >= 0 and phys_val != 0:
+                        os.environ["CUDA_VISIBLE_DEVICES"] = str(phys_val)
+                        return
+                except ValueError:
+                    pass
+
+_early_set_cuda_visible_from_args_env()
+
+import torch
 
 from hoidini.amasstools.geometry import matrix_to_axis_angle
 from hoidini.blender_utils.visualize_mesh_figure_blender import get_smpl_template
@@ -567,6 +601,9 @@ def get_args():
     parser.add_argument('--experiments_json', type=str, default='hoidini_data/evaluation/paper_results_grab/result_paths_per_experiment.json', help='Path to JSON file containing experiment results and file paths')
     parser.add_argument('--imos_files_path', type=str, default='hoidini_data/evaluation/paper_results_grab/imos_exp_31_model_Interaction_Prior_Posterior_CVAE_clip_lr_0-0005_batchsize_64_latentD_100_languagemodel_clip_usediscriminator_False', help='Path to IMoS model results directory')
 
+    # Physical GPU selection similar to training/inference
+    parser.add_argument('--device', type=int, default=None, help='Physical GPU id to use (mapped to logical CUDA:0)')
+
     args = parser.parse_args()
     return args
 
@@ -574,6 +611,15 @@ def get_args():
 
 if __name__ == '__main__':
     args = get_args()
+    # Map physical GPU id to CUDA:0 to keep dist_util.dev() consistent
+    phys_id = args.device if args.device is not None else (
+        int(os.environ.get('PHYSICAL_GPU_ID')) if os.environ.get('PHYSICAL_GPU_ID') is not None else None
+    )
+    if phys_id is not None and phys_id >= 0:
+        os.environ['CUDA_VISIBLE_DEVICES'] = str(phys_id)
+        print(f"Using physical GPU {phys_id} (visible as CUDA:0)")
+    # Ensure dist_util uses device 0 (logical)
+    dist_util.setup_dist(0)
     os.makedirs(args.out_path, exist_ok=True)
     
     # main_imos(args)
