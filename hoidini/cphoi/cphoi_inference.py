@@ -580,13 +580,9 @@ def validate_cfg(cfg: CphoiInferenceConfig):
 def cphoi_inference(cfg: CphoiInferenceConfig):
     print(cfg)
     validate_cfg(cfg)
-    # Map physical GPU to logical CUDA:0 if requested, and normalize cfg.device
-    if cfg.physical_gpu_id is not None:
-        os.environ["CUDA_VISIBLE_DEVICES"] = str(cfg.physical_gpu_id)
-        cfg.device = 0
-        print(f"Using physical GPU {cfg.physical_gpu_id} (visible as CUDA:0)")
-
-    # If CUDA_VISIBLE_DEVICES already set (via env or earlier), keep device at 0
+    # Normalize device to CUDA:0 when CUDA_VISIBLE_DEVICES is set, or map device=N to physical GPU
+    # Prefer early env/CLI mapping done before torch import
+    # If CUDA_VISIBLE_DEVICES already set (via env or early mapping), keep device at 0
     if os.environ.get("CUDA_VISIBLE_DEVICES"):
         cfg.device = 0
 
@@ -920,12 +916,7 @@ def cphoi_inference(cfg: CphoiInferenceConfig):
     version_base="1.2", config_path="../configs", config_name="sampling_cphoi.yaml"
 )
 def main(cfg: CphoiInferenceConfig):
-    # Also support env var PHYSICAL_GPU_ID at entry point, consistent with train
-    if cfg.physical_gpu_id is None and os.environ.get("PHYSICAL_GPU_ID") is not None:
-        try:
-            cfg.physical_gpu_id = int(os.environ["PHYSICAL_GPU_ID"])
-        except ValueError:
-            pass
+    # Device mapping is handled early at module import; just run inference.
     cphoi_inference(cfg)
 
 
