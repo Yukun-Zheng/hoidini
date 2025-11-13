@@ -173,3 +173,46 @@ hoidini_data/
 hoidini_results/
 hoidini_training/
 cphoi_extended_smpldata_cache/
+
+# ===== HOIDiNi 项目特定忽略规则 =====
+# 训练相关的检查点和优化器状态
+hoidini_training/**/*.pt
+hoidini_training/**/*.pth
+hoidini_training/**/*.ckpt
+
+# 缓存目录（已部分忽略，但需要更明确）
+cphoi_extended_smpldata_cache/
+
+# 临时数据处理目录
+tmp/
+tmp/**/*.pt
+tmp/**/*.pkl
+tmp/**/*.npy
+
+# 输出目录
+outputs/
+
+# WandB 实验记录
+wandb/
+
+# 预训练模型文件（如果不需要版本控制）
+hoidini_data/models/*.pt
+hoidini_data/models/*.pth
+hoidini_data/evaluation/**/*.pt
+
+# 数据集缓存（已部分忽略，但需要更明确）
+hoidini_data/.cache/
+hoidini_data/datasets/**/*.pkl
+hoidini_data/datasets/**/*.npy
+hoidini_data/datasets/**/*.npz
+
+# SMPL 模型相关大文件
+hoidini_data/smpl_models/*.pkl
+hoidini_data/smpl_models/*.npz
+
+# 特定的大文件类型（避免意外提交）
+*.joblib
+*.pkl
+*.pickle
+*.npz
+*.npy

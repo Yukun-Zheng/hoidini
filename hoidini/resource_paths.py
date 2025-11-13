@@ -26,7 +26,7 @@ MODEL_PATH = os.environ.get(
 )
 SMPL_MODELS_DATA = os.environ.get(
     "SMPL_MODELS_DATA",
-    os.path.join(PROJECT_ROOT, "hoidini_data", "datasets", "smpl_models"),
+    os.path.join(PROJECT_ROOT, "hoidini_data", "smpl_models"),
 )
 
 # Optional datasets (can be downloaded separately if needed)

@@ -1,9 +1,10 @@
 # This code is based on https://github.com/openai/guided-diffusion
+import os
+import sys
 from dataclasses import dataclass
 from typing import Optional
 import hydra
 from hydra.core.config_store import ConfigStore
-import os
 import json
 import shutil
 import torch
@@ -49,6 +50,8 @@ class CphoiTrainConfig:
     overwrite: bool = False
     seed: int = 42
     device: int = 0
+    # Optional physical GPU id to be mapped to logical CUDA:0 in Python
+    physical_gpu_id: Optional[int] = None
     train_platform_type: str = "WandBPlatform"
     wandb_project: str = "cphoi"
     resume_checkpoint: str = ""
@@ -172,6 +175,23 @@ def train(args: CphoiTrainConfig):
 
 @hydra.main(version_base=None, config_name="cphoi_train_cfg")
 def main(cfg: CphoiTrainConfig):
+    # Optional override via config to remap physical GPU at runtime
+    if cfg.physical_gpu_id is not None:
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(cfg.physical_gpu_id)
+        cfg.device = 0
+        print(f"Using physical GPU {cfg.physical_gpu_id} (visible as CUDA:0)")
+
+    # Keep Hydra/W&B device index at 0 when mapping is active
+    if os.environ.get("CUDA_VISIBLE_DEVICES"):
+        cfg.device = 0
+
+    # If user passed device=N via CLI/.sh and no mapping is active yet,
+    # treat device as physical GPU id, remap to CUDA:0 to satisfy W&B.
+    if not os.environ.get("CUDA_VISIBLE_DEVICES") and isinstance(cfg.device, int) and cfg.device != 0 and cfg.device >= 0:
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(cfg.device)
+        cfg.device = 0
+        print("Remapped physical device to logical CUDA:0 via device CLI param")
+
     dist_util.setup_dist(cfg.device)
     assert torch.cuda.is_available()
     if cfg.debug_mode:

@@ -2,10 +2,45 @@ from dataclasses import dataclass, field
 from functools import partial
 import json
 import os
+import sys
 import hydra
 from typing import Dict, List, Optional, Union
 import numpy as np
 from omegaconf import OmegaConf
+
+# Early: map physical GPU to CUDA:0 before torch import if possible
+def _early_set_cuda_visible_from_args_env():
+    phys_env = os.environ.get("PHYSICAL_GPU_ID")
+    if phys_env is not None:
+        try:
+            phys_val = int(phys_env)
+            if phys_val >= 0:
+                os.environ["CUDA_VISIBLE_DEVICES"] = str(phys_val)
+                return
+        except ValueError:
+            pass
+    for arg in sys.argv[1:]:
+        if arg.startswith("device="):
+            val = arg.split("=", 1)[1]
+            try:
+                phys_val = int(val)
+                if phys_val >= 0 and phys_val != 0:
+                    os.environ["CUDA_VISIBLE_DEVICES"] = str(phys_val)
+                    return
+            except ValueError:
+                pass
+        if arg.startswith("physical_gpu_id="):
+            val = arg.split("=", 1)[1]
+            try:
+                phys_val = int(val)
+                if phys_val >= 0:
+                    os.environ["CUDA_VISIBLE_DEVICES"] = str(phys_val)
+                    return
+            except ValueError:
+                pass
+
+_early_set_cuda_visible_from_args_env()
+
 import torch
 from hydra.utils import instantiate
 import bpy
@@ -83,6 +118,8 @@ class CphoiInferenceConfig:
     grab_dataset_path: str = field()
     batch_size_gen: int = field()
     device: Optional[int] = field(default=None)
+    # Optional physical GPU id to be mapped to logical CUDA:0 in Python
+    physical_gpu_id: Optional[int] = field(default=None)
 
     sampler_config: Optional[dict] = field(default=None)  # Define the sampling tasks
     autoregressive_include_prefix: bool = field(default=True)
@@ -543,8 +580,20 @@ def validate_cfg(cfg: CphoiInferenceConfig):
 def cphoi_inference(cfg: CphoiInferenceConfig):
     print(cfg)
     validate_cfg(cfg)
+    # Normalize device to CUDA:0 when CUDA_VISIBLE_DEVICES is set, or map device=N to physical GPU
+    # Prefer early env/CLI mapping done before torch import
+    # If CUDA_VISIBLE_DEVICES already set (via env or early mapping), keep device at 0
+    if os.environ.get("CUDA_VISIBLE_DEVICES"):
+        cfg.device = 0
+
+    # If user passed device=N via CLI/.sh and no mapping is active yet, treat as physical id
+    if not os.environ.get("CUDA_VISIBLE_DEVICES") and isinstance(cfg.device, int) and cfg.device != 0 and cfg.device >= 0:
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(cfg.device)
+        cfg.device = 0
+        print("Remapped physical device to logical CUDA:0 via device CLI param")
+
+    # Fallback: if device is None, pick least busy device index (visible set controls scope)
     device_ind = cfg.device if cfg.device is not None else get_least_busy_device().index
-    # device_ind = -1
     print(f"Using device {device_ind}")
     dist_util.setup_dist(device_ind)
     add_training_args(cfg)
@@ -867,6 +916,7 @@ def cphoi_inference(cfg: CphoiInferenceConfig):
     version_base="1.2", config_path="../configs", config_name="sampling_cphoi.yaml"
 )
 def main(cfg: CphoiInferenceConfig):
+    # Device mapping is handled early at module import; just run inference.
     cphoi_inference(cfg)
 
 
